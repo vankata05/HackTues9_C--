@@ -63,9 +63,7 @@ app.get("/", (req, res) => {
 
 app.post("/register", (req, res) => {
     let data = req.body
-    console.log(data.password)
-    console.log(data.confirmpassword)
-    if(data.password == data.confirmpassword && validator.isEmail(data.email))
+     if(data.password == data.confirmpassword && validator.isEmail(data.email))
     {
         console.log("Yes")
         bcrypt.hash(data.password, 10, function(err, hash) {
