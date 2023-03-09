@@ -31,10 +31,10 @@ app.get("/", (req, res) => {
     res.redirect("/homePage")
 })
 
-app.get("*", (req,res) => {
+app.get("*", async (req,res) => {
     let url = req.url
-    res.sendFile(__dirname + "/public/" + url, (err) => {
-        res.sendFile(__dirname + "/public/" + url + ".html", (error) => {
+    await res.sendFile(__dirname + "/public/" + url, async(err) => {
+        await res.sendFile(__dirname + "/public/" + url + ".html", (error) => {
             res.end("Not Found")
         })
     });
@@ -46,15 +46,15 @@ app.post("/register", async (req, res) => {
     let data = req.body
     if(data.password != data.repeat_password)
     {
-        res.end("The passwords aren't the same")  
+        res.end('<p>The passwords are not the same</p> <br> <a href="/accountPage"><button>Try Again</button></a>')  
     }
     else if(Validator.isEmail(data.email) == false)
     {
-        res.end("Invalid Email")
+        res.end('<p>The email you have entered is invalid</p> <br> <a href="/accountPage"><button>Try Again</button></a>')
     }
     else if(await UserModel.findOne({email: data.email}))
     {
-        res.end("Email already exists")
+        res.end('<p>Account with that email already exists</p> <br> <a href="/accountPage"><button>Try Again</button></a>')
     }
     else
     {
@@ -107,7 +107,7 @@ app.post("/authorization", async(req, res) => {
     }
     else
     {
-        res.end("Wrong Code")
+        res.end('<p>The authorization code you have entered is incorrect</p> <br> <a href="/accountPage"><button>Try Again</button></a>')
     }
 })
 
@@ -116,7 +116,7 @@ app.post("/login", async (req, res) => {
     let data = req.body;
     if(Validator.isEmail(data.email) == false)
     {
-        res.end("Invalid Email")
+        res.end('<p>The email you have entered is invalid</p> <br> <a href="/accountPage"><button>Try Again</button></a>')
     }
     else if(await UserModel.findOne({email: data.email}))
     {
@@ -128,12 +128,12 @@ app.post("/login", async (req, res) => {
         }
         else
         {
-            res.end("Invalid information");
+            res.end('<p>The email or the password you have entered is invalid</p> <br> <a href="/accountPage"><button>Try Again</button></a>')
         }
     }
     else
     {
-        res.end("Invalid information");
+        res.end('<p>The email or the password you have entered is invalid</p> <br> <a href="/accountPage"><button>Try Again</button></a>')
     }
 })
 

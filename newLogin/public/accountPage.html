@@ -1,8 +1,7 @@
 <!DOCTYPE html>
-<html>
-    
+
 <head>
-    <link rel="stylesheet" href="/accPageStyles.css"/>
+    <link rel="stylesheet" href="accPageStyles.css"/>
 </head>
 
 <body>
@@ -30,19 +29,20 @@
 
         <div class = "formHolder">
 
-            <form class = "formBox", action="/login", method="post">
+            <form class = "formBox" action="/login", method="post">
                 <p class = "formTitle">Log in</p>
                 <p class = "text">Email</p>
                 <input type = "text" class = "textbox" name="email">
                 <p class = "text">Password</p>
                 <input type = "password" class = "textbox" name="password">
                 <br>
-                <input type = "Submit" class = "onscreenBtn">
+                <input type = "Submit" class = "onscreenBtn" value="Login">
             </form>
+            
 
             <p id = "divider">or</p>
 
-            <form class = "formBox", action="/register", method="post">
+            <form class = "formBox" action="/register" method="post">
                 <p class = "formTitle">Sign up</p>
                 <p class = "text">Email</p>
                 <input type = "text" class = "textbox" name="email">
@@ -51,11 +51,10 @@
                 <p class = "text">Confirm password</p>
                 <input type = "password" class = "textbox" name="repeat_password">
                 <br>
-                <input type = "Submit" class = "onscreenBtn">
+                <input type = "Submit" class = "onscreenBtn" value="Register">
             </form>
 
         </div>
-        <p class = "footer">This is the footer of the page</p>
+        <p class = "footer"></p>
     </div> 
 </body>
-</html>

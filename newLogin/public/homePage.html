@@ -1,7 +1,7 @@
 <!DOCTYPE html>
 
 <head>
-    <link rel="stylesheet" href="styles.css"/>
+    <link rel="stylesheet" href="homePageStyles.css"/>
 </head>
 
 <body>
@@ -31,10 +31,22 @@
             After you have logged in, you can use 
             all of our features</p>
         <div id = "btnHolder">
-            <button onclick="window.location.href = 'trackersPage.html';"class = "onscreenBtn">Trackers</button>
-            <button onclick="window.location.href = 'contactsPage.html';"class = "onscreenBtn">Contacts</button>
-            <button onclick="window.location.href = 'accountPage.html';"class = "onscreenBtn">Account</button>
+            <button onclick="window.location.href = 'trackersPage.html';"class = "mainBtn">
+                <img src = "trackers.png" class = "mainBtnImage">
+                <p class = "btnText">See the location of the tracker</p>
+                <p class = "btnText">Trackers></p>
+            </button>
+            <button onclick="window.location.href = 'contactsPage.html';"class = "mainBtn">
+                <img src = "contacts.png" class = "mainBtnImage">
+                <p class = "btnText">Contact the creators of the page</p>
+                <p class = "btnText">Contacts></p>
+            </button>
+            <button onclick="window.location.href = 'accountPage.html';"class = "mainBtn">
+                <img src = "account.png" class = "mainBtnImage">
+                <p class = "btnText">Manage your account</p>
+                <p class = "btnText">Account></p>
+            </button>
         </div>
-        <p class = "footer">This is the footer of the page</p>
+        <p class = "footer"></p>
     </div> 
 </body>

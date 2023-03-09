@@ -10,12 +10,12 @@
   /*grid*/
   .container{
     display: grid;
-    grid-template-columns: 20% 80%;
+    grid-template-columns: 100%;
     grid-template-rows: 15% 75% 10%;
     grid-template-areas: 
-    ". a"
-    ". b"
-    ". c";
+    "a"
+    "b"
+    "c";
     position:absolute;
     height: 100%;
     width: 100%;
@@ -39,11 +39,6 @@
     transition:all 200ms ease-in;
   }
   
-  .sidebarItem{
-    align-items: center;
-    justify-content: center;
-  }
-  
   .sidebar button{
     display: block;
     padding: 20px;
@@ -57,13 +52,12 @@
     color: white;
     border: none;
     background-color: transparent;
-    transition: all 0.3s ease;
+    transition: all 0.4s ease;
   }
   
   .sidebar button:hover{
     background-color: #4172bc;
-    color: rgb(0, 0, 0);
-    transition: all 0.3s ease;
+    transition: all 0.4s ease;
   }
   
   /*menu classes*/
@@ -193,7 +187,6 @@
   
   .onscreenBtn:hover{
     background-color: #4172bc;
-    color: black;
   }
 
   .textbox{
