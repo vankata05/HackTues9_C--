@@ -26,11 +26,16 @@ const UserModel =  mongoose.model('UserModel', UserSchema)
 
 
 //Get pages
-app.use(express.static(__dirname + '/public'));
 
-app.get("/", (req,res) => {
+app.get("/", (req, res) => {
     res.redirect("/homePage.html")
 })
+
+app.get("*", (req,res) => {
+    let url = req.url
+    res.sendFile(__dirname + "/public/" + url);
+})
+
 
 //Register 
 app.post("/register", async (req, res) => {
