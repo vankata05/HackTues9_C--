@@ -1,4 +1,5 @@
 const express = require('express');
+const validator = require('validator');
 const bodyParser = require('body-parser')
 const app = express();
 const fs = require('fs');
@@ -64,7 +65,7 @@ app.post("/register", (req, res) => {
     let data = req.body
     console.log(data.password)
     console.log(data.confirmpassword)
-    if(data.password == data.confirmpassword)
+    if(data.password == data.confirmpassword && validator.isEmail(data.email))
     {
         console.log("Yes")
         bcrypt.hash(data.password, 10, function(err, hash) {
@@ -77,7 +78,7 @@ app.post("/register", (req, res) => {
     else
     {
         console.log("No")
-        res.end("Passwords aren't the same")
+        res.end("Passwords aren't the same or the email is incorrect")
     }
 });
 
