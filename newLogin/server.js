@@ -9,7 +9,6 @@ var nodemailer = require('nodemailer');
 let email1;
 let hash1;
 let auth_code;
-
 //Connect to DB
 async function connectdb() {
     await mongoose.connect('mongodb+srv://DbUser:wAEFLnsCKuh8qppA@hacktues.klqsa4r.mongodb.net/?retryWrites=true&w=majority');
@@ -26,25 +25,12 @@ const UserModel =  mongoose.model('UserModel', UserSchema)
 
 
 
-//Get the registration form
-app.get("/register", (req, res) => {
-    fs.readFile("site/register.html", (err, data) => {
-        res.end(data)
-    })
+//Get pages
+app.use(express.static(__dirname + '/public'));
 
-});
-
-app.get("/", (req, res) => {
-    res.redirect("/login")
+app.get("/", (req,res) => {
+    res.redirect("/homePage.html")
 })
-
-//Get the login form
-app.get("/login", (req, res) => {
-    fs.readFile("site/login.html", (err, data) => {
-        res.end(data)
-    })
-
-});
 
 //Register 
 app.post("/register", async (req, res) => {
@@ -66,9 +52,10 @@ app.post("/register", async (req, res) => {
         email1 = data.email
         hash1 = await bcrypt.hash(data.password, 10)
         email_authorization()
-        fs.readFile("site/authorization.html", (err, data) => {
+        fs.readFile("public/accVerifPage.html", (err, data) => {
             res.end(data)
         })
+        
     }
 
 });
