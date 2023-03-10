@@ -1,31 +1,102 @@
 const express = require('express')
 const app = express()
 const fs = require('fs')
-const mongoose = require('mongoose')
+const { MongoClient, ServerApiVersion } = require('mongodb');
 const bcrypt = require('bcrypt')
 const Validator = require('validator')
 app.use(express.urlencoded({ extended: true }));
-var nodemailer = require('nodemailer');
+const nodemailer = require('nodemailer');
+const cookieParser = require('cookie-parser');
+app.use(cookieParser());
 let email1;
 let hash1;
 let auth_code;
 //Connect to DB
-async function connectdb() {
-    await mongoose.connect('mongodb+srv://DbUser:wAEFLnsCKuh8qppA@hacktues.klqsa4r.mongodb.net/?retryWrites=true&w=majority');
-}
-connectdb();
 
+const client = new MongoClient("mongodb+srv://DbUser:wAEFLnsCKuh8qppA@hacktues.klqsa4r.mongodb.net/?retryWrites=true&w=majority", { useNewUrlParser: true, useUnifiedTopology: true, serverApi: ServerApiVersion.v1 });
+client.connect()
+const collection = client.db("Users").collection("Login");
 
-//Create User Model
-const UserSchema = new mongoose.Schema({
-    email: {type: String, unique: true},
-    password: String
-});
-const UserModel =  mongoose.model('UserModel', UserSchema)
+//accountPage
+app.get("/accountPage", async(req, res) => {
+    try
+    {
+        let cookie = req.cookies.Login.token
+        if(cookie)
+        {
+            let FindToken = await collection.findOne({token:cookie})
+            if(FindToken)
+            {
+                const d = new Date()
+                let date = d.getTime()
+                if(date < FindToken.expire)
+                {
+                    await collection.updateOne({token:cookie}, {$set:{expire:generateDate()}})
+                    res.sendFile(__dirname + "/public/LoggedInAccPage.html")
+                }
+                else{
+                    res.sendFile(__dirname + "/public/accountPage.html")
+                }
+            }
+            else
+            {
+                res.sendFile(__dirname + "/public/accountPage.html")
+            }
+        }
+    }
+    catch{
+        res.sendFile(__dirname + "/public/accountPage.html")
+    }
 
+})
 
+app.get("/accountPage.html", async(req, res) => {
+    res.redirect("/accountPage")
+})
 
-//Get pages
+app.get("/LoggedInAccPage.html", (req, res) => {
+    res.redirect("/accountPage")
+})
+
+app.get("/LoggedInAccPage", (req, res) => {
+    res.redirect("/accountPage")
+})
+
+app.get("/trackersPage.html", async(req, res) => {
+    try
+    {
+        let cookie = req.cookies.Login.token
+        if(cookie)
+        {
+            let FindToken = await collection.findOne({token:cookie})
+            if(FindToken)
+            {
+                const d = new Date()
+                let date = d.getTime()
+                if(date < FindToken.expire)
+                {
+                    res.sendFile(__dirname + "/public/trackersPage.html")
+                    await collection.updateOne({token:cookie}, {$set:{expire:generateDate()}})
+                }
+                else{
+                    res.sendFile(__dirname + "/public/accountPage.html")
+                }
+            }
+            else
+            {
+                res.sendFile(__dirname + "/public/accountPage.html")
+            }
+        }
+    }
+    catch{
+        res.sendFile(__dirname + "/public/accountPage.html")
+    }
+
+})
+
+app.get("/trackersPage", async(req, res) =>{
+    res.redirect("/trackersPage")
+})
 
 app.get("/", (req, res) => {
     res.redirect("/homePage")
@@ -52,7 +123,7 @@ app.post("/register", async (req, res) => {
     {
         res.end('<p>The email you have entered is invalid</p> <br> <a href="/accountPage"><button>Try Again</button></a>')
     }
-    else if(await UserModel.findOne({email: data.email}))
+    else if(await collection.findOne({email: data.email}))
     {
         res.end('<p>Account with that email already exists</p> <br> <a href="/accountPage"><button>Try Again</button></a>')
     }
@@ -96,13 +167,36 @@ async function email_authorization()
     });
 }
 
-//Auth page
+//Generate Token
+const characters ='ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789-.@_/';
+
+function generateString(length) {
+    let result = '';
+    const charactersLength = characters.length;
+    for ( let i = 0; i < length; i++ ) {
+        result += characters.charAt(Math.floor(Math.random() * charactersLength));
+    }
+
+    return result;
+}
+
+//generate expiration date
+function generateDate()
+{
+    const d = new Date();
+    const newDate = new Date(d.getTime() + 30*60000)
+    return newDate
+}
+
+//Auth Page
 
 app.post("/authorization", async(req, res) => {
     if(req.body.auth_code == auth_code)
     {
-        let User = new UserModel({email: email1, password: hash1})
-        await User.save()
+        let token = generateString(30);
+        let expire = generateDate();        
+        await collection.insertOne({email:email1, password: hash1, token:token, expire:expire})
+        res.cookie("Login", {token: token})
         res.end("Registration Done")
     }
     else
@@ -118,12 +212,16 @@ app.post("/login", async (req, res) => {
     {
         res.end('<p>The email you have entered is invalid</p> <br> <a href="/accountPage"><button>Try Again</button></a>')
     }
-    else if(await UserModel.findOne({email: data.email}))
+    else if(await collection.findOne({email: data.email}))
     {
-        let user = await UserModel.findOne({email: data.email});
+        let user = await collection.findOne({email: data.email});
         let iscorrect = await bcrypt.compare(data.password, user.password);
         if(iscorrect)
         {
+            let token = generateString(30)
+            let expire = generateDate()
+            await collection.updateOne({email:data.email}, {$set:{token: token, expire:expire}})
+            res.cookie("Login", {token: token})
             res.end("Logged in");
         }
         else
