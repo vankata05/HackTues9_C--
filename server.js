@@ -11,7 +11,7 @@ app.use(cookieParser());
 let email1;
 let hash1;
 let auth_code;
-
+let coords = "32.43552,53.53213"
 
 //Connect to DB
 const client = new MongoClient("mongodb+srv://DbUser:wAEFLnsCKuh8qppA@hacktues.klqsa4r.mongodb.net/?retryWrites=true&w=majority", { useNewUrlParser: true, useUnifiedTopology: true, serverApi: ServerApiVersion.v1 });
@@ -78,6 +78,7 @@ app.get("/trackersPage.html", async(req, res) => {
                 {
                     res.sendFile(__dirname + "/public/trackersPage.html")
                     await collection.updateOne({token:cookie}, {$set:{expire:generateDate()}})
+                    res.redirect("/update_map")
                 }
                 else{
                     res.sendFile(__dirname + "/public/accountPage.html")
@@ -96,7 +97,7 @@ app.get("/trackersPage.html", async(req, res) => {
 })
 
 app.get("/trackersPage", async(req, res) =>{
-    res.redirect("/trackersPage")
+    res.redirect("/trackersPage.html")
 })
 
 app.get("/", (req, res) => {
@@ -139,14 +140,20 @@ app.get("/paymentPage.html", async(req, res) => {
     res.redirect("/paymentPage")
 })
 
+app.get("/update_map", (req, res) => {
+        const data = "<iframe src='https://www.google.com/maps/embed/v1/place?q=" + coords + "&key=AIzaSyBFw0Qbyq9zTFTd-tUY6dZWTgaQzuU17R8' width='800' height='600' style='border:0;' allowfullscreen='' loading='lazy' referrerpolicy='no-referrer-when-downgrade'></iframe>";
+        res.type("text/html").send(data);
+})
+
 app.get("*", async (req,res) => {
     let url = req.url
     await res.sendFile(__dirname + "/public/" + url, async(err) => {
-        await res.sendFile(__dirname + "/public/" + url + ".html", (error) => {
-            res.end("Not Found")
+        await res.sendFile(__dirname + "/public/" + url + ".html", async(error) => {
+            await res.end("Not Found")
         })
     });
 })
+
 
 //LogOut
 app.post("/logout", (req, res) => {

@@ -4,7 +4,6 @@
     <link rel="stylesheet" href="trackerPageStyles.css"/>
     <title>Petsafe</title>
     <link rel = "icon" href = "icon2.png">
-    <script src="https://polyfill.io/v3/polyfill.min.js?features=default"></script>
 </head>
 
 <body>
@@ -30,7 +29,7 @@
 
     <div class = "container" id = "homePage">
         <h1 class = "title">Petsafe incorporated</h1>
-    <p class = "map">
+    <p class = "map" id="map">
         <iframe 
         src="https://www.google.com/maps/embed?pb=!1m18!1m12!1m3!1d5952.768697368169!2d23.371384569901764!3d42.66744242930502!2m3!1f0!2f0!3f0!3m2!1i1024!2i768!4f13.1!3m3!1m2!1s0x40aa85d643a3af15%3A0xcbc66ddbb54d08b3!2sSofia%20Tech%20Park!5e0!3m2!1sen!2sbg!4v1678377036829!5m2!1sen!2sbg"
         width="800" height="600" 
@@ -40,6 +39,18 @@
         referrerpolicy="no-referrer-when-downgrade">
         </iframe>
     </p>
+    <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+    <script>
+        $(document).ready(function() {
+            $.ajax({
+                url: "/update_map",
+                type: "GET",
+                success: function(data) {
+                    $("#map").html(data);
+                }
+            });
+        });
+  </script>
         <p class = "footer"></p>
     </div> 
 </body>
