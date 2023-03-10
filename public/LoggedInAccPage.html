@@ -1,0 +1,49 @@
+<!DOCTYPE html>
+
+<head>
+    <link rel="stylesheet" href="accPageStyles.css"/>
+    <title>Petsafe</title>
+    <link rel = "icon" href = "icon2.png">
+</head>
+
+<body>
+    <script>
+    function handleMenu(buttonElement){
+        if(buttonElement.id === "open") buttonElement.id = "closed";
+        else buttonElement.id = "open";
+    }
+    </script>
+
+    <div class = "wraper">
+        <button onclick = "handleMenu(this)" id = "closed" class = "menuButton"><img src = "menu.png" style = "width: 100%; height: 100%;"></button>
+        <nav class = "sidebar">
+            <ul>
+                <li><button onclick="window.location.href = 'homePage.html';"><img src = "home.png" class = "btnImage">Home</button></li>
+                <li><button onclick="window.location.href = 'contactsPage.html';"><img src = "contacts.png" class = "btnImage">Contacts</button></li>
+                <li><button onclick="window.location.href = 'trackersPage.html';"><img src = "trackers.png" class = "btnImage">Trackers</button></li>
+                <li><button onclick="window.location.href = 'accountPage.html';"><img src = "account.png" class = "btnImage">Account</button></li>
+                <li><button onclick="window.location.href = 'paymentPage.html';"><img src = "payment.png" class = "btnImage">Payment</button></li>
+            </ul>
+        </nav>
+    </div>
+
+    <div class = "container" id = "homePage">
+        <h1 class = "title">Petsafe incorporated</h1>
+
+        <div style = "display: flex; justify-content: center; align-items: center; text-align: center;">
+            <div style = "margin: 100px;">
+                <img src = "gentleman.png" style = "padding: 20px; height: 80%;">
+                <p style = "font-size: 30px;">email here</p>
+            </div>
+
+            <button class = "accBtn" onclick="window.location.href = 'trackersPage.html';">
+                <img src = "trackers.png" style = "height: 65%;">
+                <p class = "text">Trackers</p>
+            </button>
+            <form action="/logout" method="post">
+                <input type="image" src="logout.png" class = "accBtn" alt="Submit">
+            </form>
+        </div>
+        <p class = "footer"></p>
+    </div> 
+</body>
