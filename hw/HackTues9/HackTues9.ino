@@ -1,7 +1,7 @@
 #include <Arduino.h>
 #include <U8x8lib.h>
 
-#define TIMEOUT 60
+#define TIMEOUT 10
  
 U8X8_SSD1306_128X64_NONAME_HW_I2C u8x8(U8X8_PIN_NONE);
  
@@ -107,7 +107,7 @@ void setup(void){
     Serial.print("E5 LORAWAN TEST\r\n");
     u8x8.setCursor(0, 0);
  
-    if (at_send_check_response("+AT: OK", 100, "AT\r\n")){
+    if (at_send_check_response("+AT: OK", 1000, "AT\r\n")){
         is_exist = true;
         at_send_check_response("+ID: AppEui", 1000, "AT+ID\r\n");
         at_send_check_response("+MODE: LWOTAA", 1000, "AT+MODE=LWOTAA\r\n");
@@ -143,16 +143,16 @@ void setup(void){
  
 void loop(void)
 {
-    float lat = 0;
-    float lon = 0;
+    int lat = 0;
+    int lon = 0;
  
-    lat = 42.666519;
-    lon = 23.375355;
+    lat = 42666519 + random(-200, 200);
+    lon = 23375355 + random(-200, 200);
  
     Serial.print("Longitude: ");
-    Serial.print(lon);
+    Serial.println(lon);
     Serial.print("Latitude: ");
-    Serial.print(lat);
+    Serial.println(lat);
  
     u8x8.setCursor(0, 2);
     u8x8.print("      ");
@@ -166,7 +166,7 @@ void loop(void)
     if (is_exist){
         int ret = 0;
         if (is_join){
-            ret = at_send_check_response("+JOIN: Network joined", 12000, "AT+JOIN\r\n");
+            ret = at_send_check_response("+JOIN: Network joined", 20000, "AT+JOIN\r\n");
             if (ret){
                 is_join = false;
             }else{
@@ -176,7 +176,11 @@ void loop(void)
             }
         }else{
             char cmd[128];
-            sprintf(cmd, "AT+CMSGHEX=\"%04X%04X\"\r\n", (int)lat, (int)lon);
+            char temp[128];
+//            sprintf(cmd, "AT+CMSGHEX=\"%04X%04X\"\r\n", lat, lon);
+            sprintf(temp, "%d,%d", lat, lon);
+            Serial.println(temp);
+            sprintf(cmd, "AT+CMSG=\"%s\"", temp);
             ret = at_send_check_response("Done", 5000, cmd);
             if (ret){
                 recv_prase(recv_buf);
