@@ -12,6 +12,7 @@ app.use(cookieParser());
 let email1;
 let hash1;
 let auth_code;
+let apiKey
 
 
 //Connect to DB
@@ -77,11 +78,20 @@ app.get("/trackersPage.html", async(req, res) => {
                 let date = d.getTime()
                 if(date < FindToken.expire)
                 {
-                    await res.sendFile(__dirname + "/public/trackersPage.html")
-                    await collection.updateOne({token:cookie}, {$set:{expire:generateDate()}})
-                    await res.redirect("/update_map")
+                    if(FindToken.apiKey)
+                    {
+                        await res.sendFile(__dirname + "/public/trackersPage.html")
+                        await collection.updateOne({token:cookie}, {$set:{expire:generateDate()}})
+                        let apiKey = await FindToken.apiKey
+                        await res.redirect("/update_map")
+                    }
+                    else
+                    {
+                        await res.redirect("/addDevicePage")
+                    }
                 }
-                else{
+                else
+                {
                     res.sendFile(__dirname + "/public/accountPage.html")
                 }
             }
@@ -141,11 +151,49 @@ app.get("/paymentPage.html", async(req, res) => {
     res.redirect("/paymentPage")
 })
 
+app.get("/addDevicePage", async(req, res) => {
+    try
+    {
+        let cookie = req.cookies.Login.token
+        if(cookie)
+        {
+            let FindToken = await collection.findOne({token:cookie})
+            if(FindToken)
+            {
+                const d = new Date()
+                let date = d.getTime()
+                if(date < FindToken.expire)
+                {
+                    await collection.updateOne({token:cookie}, {$set:{expire:generateDate()}})
+                    res.sendFile(__dirname + "/public/addDevicePage.html")
+                }
+                else{
+                    res.sendFile(__dirname + "/public/accountPage.html")
+                }
+            }
+            else
+            {
+                res.sendFile(__dirname + "/public/accountPage.html")
+            }
+        }
+    }
+    catch{
+        res.sendFile(__dirname + "/public/accountPage.html")
+    }
+})
+
+app.get("/addDevicePage.html", async(req, res) => {
+    await res.redirect("/addDevicePage")
+})
+
 app.get("/update_map", async(req, res) => {
 
+    let cookie = req.cookies.Login.token
+    let user = await collection.findOne({token:cookie})
+    let apiKey = user.apiKey
     let response = await fetch('https://console.helium.com/api/v1/devices/1b870fc2-269b-4760-b038-9c924a585c19/events', {
         headers: {
-            'key': '+4uIsSU6UVEod7Gc0PGT4fY8mawZZrJ6g+5ATGc8x+I'
+            'key': apiKey
         }
     })
     
@@ -265,7 +313,7 @@ app.post("/authorization", async(req, res) => {
     {
         let token = generateString(30);
         let expire = generateDate();        
-        await collection.insertOne({email:email1, password: hash1, token:token, expire:expire})
+        await collection.insertOne({email:email1, password: hash1, token:token, expire:expire, apiKey: null})
         res.cookie("Login", {token: token})
         res.redirect("/accountPage");
     }
@@ -303,6 +351,15 @@ app.post("/login", async (req, res) => {
     {
         res.end('<p>The email or the password you have entered is invalid</p> <br> <a href="/accountPage"><button>Try Again</button></a>')
     }
+})
+
+//add api key
+
+app.post("/api_key", async(req, res) => {
+    let data = req.body
+    let cookie = req.cookies.Login.token
+    await collection.updateOne({token:cookie}, {$set:{apiKey:data.api_key}})
+    res.redirect("/trackersPage")
 })
 
 app.listen(3000)
