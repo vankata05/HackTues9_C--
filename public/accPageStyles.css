@@ -217,6 +217,11 @@
     font-family: Verdana, Geneva, Tahoma, sans-serif;
   }
 
+  .accBtn:hover{
+    background-color:#4172bc;
+    transition: all 0.4s ease;
+  }
+
   .text{
     margin: 20px 25px 3px 25px;
     padding: 0px 25px 3px 25px;

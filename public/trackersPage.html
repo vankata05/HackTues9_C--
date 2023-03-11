@@ -41,16 +41,22 @@
     </p>
     <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
     <script>
-        $(document).ready(function() {
-            $.ajax({
-                url: "/update_map",
-                type: "GET",
-                success: function(data) {
-                    $("#map").html(data);
-                }
+        function change_map()
+        {
+            $(document).ready(function() {
+                $.ajax({
+                    url: "/update_map",
+                    type: "GET",
+                    success: function(data) {
+                        $("#map").html(data);
+                    }
+                });
             });
-        });
+        }
   </script>
         <p class = "footer"></p>
     </div> 
 </body>
+<script>
+    window.onload(change_map())
+</script>

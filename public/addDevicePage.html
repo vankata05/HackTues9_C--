@@ -30,18 +30,16 @@
     <div class = "container" id = "homePage">
         <h1 class = "title">Petsafe incorporated</h1>
 
-        <div style = "display: flex; justify-content: center; align-items: center; text-align: center;">
+        <div class = "formHolder">
 
-            <button class = "accBtn" onclick="window.location.href = 'trackersPage.html';">
-                <img src = "trackers.png" style = "height: 65%;">
-                <p class = "text">Trackers</p>
-            </button>
-            <form action="/logout", method="post">
-            <input type="submit" value="Log Out" class = "accBtn">
+            <form class = "formBox" style="height: 45%;" method="post" action="/authorization">
+                <p class = "formTitle">Add device</p>
+                <p class = "text">Enter the device id(a string of characters, unique to this device)</p>
+                <p class = "text">Enter id</p>
+                <input type = "text" class = "textbox" name="auth_code">
+                <br>
+                <input type = "Submit" class = "onscreenBtn">
             </form>
-            <button class = "accBtn" onclick="window.location.href = 'addDevicePage.html';">
-                <p class = "text">Add Device</p>
-            </button>
 
         </div>
         <p class = "footer"></p>
