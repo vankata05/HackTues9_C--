@@ -7,11 +7,12 @@ const Validator = require('validator')
 app.use(express.urlencoded({ extended: true }));
 const nodemailer = require('nodemailer');
 const cookieParser = require('cookie-parser');
+const { atob } = require('buffer');
 app.use(cookieParser());
 let email1;
 let hash1;
 let auth_code;
-let coords = "32.43552,53.53213"
+
 
 //Connect to DB
 const client = new MongoClient("mongodb+srv://DbUser:wAEFLnsCKuh8qppA@hacktues.klqsa4r.mongodb.net/?retryWrites=true&w=majority", { useNewUrlParser: true, useUnifiedTopology: true, serverApi: ServerApiVersion.v1 });
@@ -76,9 +77,9 @@ app.get("/trackersPage.html", async(req, res) => {
                 let date = d.getTime()
                 if(date < FindToken.expire)
                 {
-                    res.sendFile(__dirname + "/public/trackersPage.html")
+                    await res.sendFile(__dirname + "/public/trackersPage.html")
                     await collection.updateOne({token:cookie}, {$set:{expire:generateDate()}})
-                    res.redirect("/update_map")
+                    await res.redirect("/update_map")
                 }
                 else{
                     res.sendFile(__dirname + "/public/accountPage.html")
@@ -140,8 +141,28 @@ app.get("/paymentPage.html", async(req, res) => {
     res.redirect("/paymentPage")
 })
 
-app.get("/update_map", (req, res) => {
-        const data = "<iframe src='https://www.google.com/maps/embed/v1/place?q=" + coords + "&key=AIzaSyBFw0Qbyq9zTFTd-tUY6dZWTgaQzuU17R8' width='800' height='600' style='border:0;' allowfullscreen='' loading='lazy' referrerpolicy='no-referrer-when-downgrade'></iframe>";
+app.get("/update_map", async(req, res) => {
+
+    let response = await fetch('https://console.helium.com/api/v1/devices/1b870fc2-269b-4760-b038-9c924a585c19/events', {
+        headers: {
+            'key': '+4uIsSU6UVEod7Gc0PGT4fY8mawZZrJ6g+5ATGc8x+I'
+        }
+    })
+    
+    let json = await response.text()
+    json = JSON.parse(json)
+    let payload = json[3].data.payload
+    let payload_d = atob(payload)  
+    console.log(payload_d)
+    
+    let coords_arr = payload_d.split(",")
+    let coord1 = coords_arr[0]
+    let coord2 = coords_arr[1]
+    coord1 = parseFloat(coord1)
+    coord2 = parseFloat(coord2)
+    coord1 = coord1 / 1000000
+    coord2 = coord2 / 1000000
+        const data = "<iframe src='https://www.google.com/maps/embed/v1/place?q=" + coord1 + "," + coord2 + "&key=AIzaSyBFw0Qbyq9zTFTd-tUY6dZWTgaQzuU17R8' width='800' height='600' style='border:0;' allowfullscreen='' loading='lazy' referrerpolicy='no-referrer-when-downgrade'></iframe>";
         res.type("text/html").send(data);
 })
 
