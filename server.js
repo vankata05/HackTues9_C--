@@ -94,9 +94,7 @@ app.get("/trackersPage", async(req, res) => {
                         
                         let coords_arr = payload_d.split(",")
                         let coord1 = coords_arr[0]
-                        let coord2 = coords_arr[1]
-                        coord1 = parseFloat(coord1)
-                        coord2 = parseFloat(coord2)
+                        let coord2 = coords_arr[1].slice(1)
                         let coords = coord1 + "," + coord2;
                         await res.render("trackersPage", {coords})
                         await collection.updateOne({token:cookie}, {$set:{expire:generateDate()}})
