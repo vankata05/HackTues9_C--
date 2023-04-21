@@ -12,13 +12,16 @@ app.use(cookieParser());
 let email1;
 let hash1;
 let auth_code;
-let apiKey
-
+app.set("view engine", "ejs");
 
 //Connect to DB
 const client = new MongoClient("mongodb+srv://DbUser:wAEFLnsCKuh8qppA@hacktues.klqsa4r.mongodb.net/?retryWrites=true&w=majority", { useNewUrlParser: true, useUnifiedTopology: true, serverApi: ServerApiVersion.v1 });
 client.connect()
 const collection = client.db("Users").collection("Login");
+
+app.get("/contactsPage", async(req, res) => {
+    res.render("contactsPage")
+})
 
 //accountPage
 app.get("/accountPage", async(req, res) => {
@@ -35,37 +38,30 @@ app.get("/accountPage", async(req, res) => {
                 if(date < FindToken.expire)
                 {
                     await collection.updateOne({token:cookie}, {$set:{expire:generateDate()}})
-                    res.sendFile(__dirname + "/public/LoggedInAccPage.html")
+                    res.render("LoggedInAccPage")
                 }
                 else{
-                    res.sendFile(__dirname + "/public/accountPage.html")
+                    res.render("accountPage")
                 }
             }
             else
             {
-                res.sendFile(__dirname + "/public/accountPage.html")
+                res.render("accountPage")
             }
         }
     }
     catch{
-        res.sendFile(__dirname + "/public/accountPage.html")
+        res.render("accountPage")
     }
 
 })
 
-app.get("/accountPage.html", async(req, res) => {
-    res.redirect("/accountPage")
-})
-
-app.get("/LoggedInAccPage.html", (req, res) => {
-    res.redirect("/accountPage")
-})
 
 app.get("/LoggedInAccPage", (req, res) => {
     res.redirect("/accountPage")
 })
 
-app.get("/trackersPage.html", async(req, res) => {
+app.get("/trackersPage", async(req, res) => {
     try
     {
         let cookie = req.cookies.Login.token
@@ -80,10 +76,30 @@ app.get("/trackersPage.html", async(req, res) => {
                 {
                     if(FindToken.apiKey)
                     {
-                        await res.sendFile(__dirname + "/public/trackersPage.html")
+                        let apiKey = FindToken.apiKey
+                        let response = await fetch('https://console.helium.com/api/v1/devices/1b870fc2-269b-4760-b038-9c924a585c19/events', {
+                            headers: {
+                                'key': apiKey
+                            }
+                        })
+                        console.log(response)
+                        let json = await response.text()
+                        console.log(json)
+                        json = JSON.parse(json)
+                        console.log(json)
+                        let payload = json[0].data.payload
+                        console.log(payload)
+                        let payload_d = atob(payload); 
+                        console.log(payload_d)
+                        
+                        let coords_arr = payload_d.split(",")
+                        let coord1 = coords_arr[0]
+                        let coord2 = coords_arr[1]
+                        coord1 = parseFloat(coord1)
+                        coord2 = parseFloat(coord2)
+                        let coords = coord1 + "," + coord2;
+                        await res.render("trackersPage", {coords})
                         await collection.updateOne({token:cookie}, {$set:{expire:generateDate()}})
-                        let apiKey = await FindToken.apiKey
-                        await res.redirect("/update_map")
                     }
                     else
                     {
@@ -92,64 +108,27 @@ app.get("/trackersPage.html", async(req, res) => {
                 }
                 else
                 {
-                    res.sendFile(__dirname + "/public/accountPage.html")
+                    res.render("accountPage")
                 }
             }
             else
             {
-                res.sendFile(__dirname + "/public/accountPage.html")
+                res.render("accountPage")
             }
         }
     }
-    catch{
-        res.sendFile(__dirname + "/public/accountPage.html")
+    catch(err){
+        console.error(err)
+        res.render("accountPage")
     }
 
 })
 
-app.get("/trackersPage", async(req, res) =>{
-    res.redirect("/trackersPage.html")
-})
 
 app.get("/", (req, res) => {
-    res.redirect("/homePage")
+    res.render("homePage")
 })
 
-app.get("/paymentPage", async(req, res) => {
-    try
-    {
-        let cookie = req.cookies.Login.token
-        if(cookie)
-        {
-            let FindToken = await collection.findOne({token:cookie})
-            if(FindToken)
-            {
-                const d = new Date()
-                let date = d.getTime()
-                if(date < FindToken.expire)
-                {
-                    await collection.updateOne({token:cookie}, {$set:{expire:generateDate()}})
-                    res.sendFile(__dirname + "/public/paymentPage.html")
-                }
-                else{
-                    res.sendFile(__dirname + "/public/accountPage.html")
-                }
-            }
-            else
-            {
-                res.sendFile(__dirname + "/public/accountPage.html")
-            }
-        }
-    }
-    catch{
-        res.sendFile(__dirname + "/public/accountPage.html")
-    }
-
-})
-
-app.get("/paymentPage.html", async(req, res) => {
-    res.redirect("/paymentPage")
-})
 
 app.get("/addDevicePage", async(req, res) => {
     try
@@ -165,62 +144,32 @@ app.get("/addDevicePage", async(req, res) => {
                 if(date < FindToken.expire)
                 {
                     await collection.updateOne({token:cookie}, {$set:{expire:generateDate()}})
-                    res.sendFile(__dirname + "/public/addDevicePage.html")
+                    res.render("addDevicePage")
                 }
                 else{
-                    res.sendFile(__dirname + "/public/accountPage.html")
+                    res.render("accountPage")
                 }
             }
             else
             {
-                res.sendFile(__dirname + "/public/accountPage.html")
+                res.render("accountPage")
             }
         }
     }
     catch{
-        res.sendFile(__dirname + "/public/accountPage.html")
+        res.render("accountPage")
     }
-})
-
-app.get("/addDevicePage.html", async(req, res) => {
-    await res.redirect("/addDevicePage")
-})
-
-app.get("/update_map", async(req, res) => {
-
-    let cookie = req.cookies.Login.token
-    let user = await collection.findOne({token:cookie})
-    let apiKey = user.apiKey
-    let response = await fetch('https://console.helium.com/api/v1/devices/1b870fc2-269b-4760-b038-9c924a585c19/events', {
-        headers: {
-            'key': apiKey
-        }
-    })
-    
-    let json = await response.text()
-    json = JSON.parse(json)
-    let payload = json[3].data.payload
-    let payload_d = atob(payload)  
-    console.log(payload_d)
-    
-    let coords_arr = payload_d.split(",")
-    let coord1 = coords_arr[0]
-    let coord2 = coords_arr[1]
-    coord1 = parseFloat(coord1)
-    coord2 = parseFloat(coord2)
-    coord1 = coord1 / 1000000
-    coord2 = coord2 / 1000000
-        const data = "<iframe src='https://www.google.com/maps/embed/v1/place?q=" + coord1 + "," + coord2 + "&key=AIzaSyBFw0Qbyq9zTFTd-tUY6dZWTgaQzuU17R8' width='800' height='600' style='border:0;' allowfullscreen='' loading='lazy' referrerpolicy='no-referrer-when-downgrade'></iframe>";
-        res.type("text/html").send(data);
 })
 
 app.get("*", async (req,res) => {
     let url = req.url
-    await res.sendFile(__dirname + "/public/" + url, async(err) => {
-        await res.sendFile(__dirname + "/public/" + url + ".html", async(error) => {
-            await res.end("Not Found")
-        })
-    });
+    try{
+        await res.sendFile(__dirname + "/views/" + url);
+    }
+    catch
+    {
+        res.end("Not Found")
+    }
 })
 
 
@@ -250,9 +199,7 @@ app.post("/register", async (req, res) => {
         email1 = data.email
         hash1 = await bcrypt.hash(data.password, 10)
         email_authorization()
-        fs.readFile("public/accVerifPage.html", (err, data) => {
-            res.end(data)
-        })
+        res.render("accVerifPage")
         
     }
 
