@@ -37,6 +37,7 @@
                 <input type = "text" class = "textbox" name="email">
                 <p class = "text">Password</p>
                 <input type = "password" class = "textbox" name="password">
+                <p id = "error" style = "color: rgb(90, 1, 1); margin: 0px; padding: 0px; "><%=login_error%></p>
                 <br>
                 <input type = "Submit" class = "onscreenBtn" value="Login">
             </form>
@@ -52,7 +53,7 @@
                 <input id="reg_password" type = "password" class = "textbox" name="password">
                 <p class = "text">Confirm password</p>
                 <input id="reg_repeat_password" type = "password" class = "textbox" name="repeat_password">
-                <p id = "error" style = "color: rgb(90, 1, 1); margin: 0px; padding: 0px; visibility: hidden;">Passwords don't match</p>
+                <p id = "error" style = "color: rgb(90, 1, 1); margin: 0px; padding: 0px; "><%=register_error%></p>
                 <br>
                 <input type = "Submit" class = "onscreenBtn" value="Register">
             </form>
@@ -61,4 +62,3 @@
         <p class = "footer"></p>
     </div> 
 </body>
-<script src="validation.js"></script>

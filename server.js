@@ -41,17 +41,17 @@ app.get("/accountPage", async(req, res) => {
                     res.render("LoggedInAccPage")
                 }
                 else{
-                    res.render("accountPage")
+                    res.render("accountPage", {login_error: "", register_error: ""})
                 }
             }
             else
             {
-                res.render("accountPage")
+                res.render("accountPage", {login_error: "", register_error: ""})
             }
         }
     }
     catch{
-        res.render("accountPage")
+        res.render("accountPage", {login_error: "", register_error: ""})
     }
 
 })
@@ -106,18 +106,18 @@ app.get("/trackersPage", async(req, res) => {
                 }
                 else
                 {
-                    res.render("accountPage")
+                    res.render("accountPage", {login_error: "", register_error: ""})
                 }
             }
             else
             {
-                res.render("accountPage")
+                res.render("accountPage", {login_error: "", register_error: ""})
             }
         }
     }
     catch(err){
         console.error(err)
-        res.render("accountPage")
+        res.render("accountPage", {login_error: "", register_error: ""})
     }
 
 })
@@ -145,17 +145,17 @@ app.get("/addDevicePage", async(req, res) => {
                     res.render("addDevicePage")
                 }
                 else{
-                    res.render("accountPage")
+                    res.render("accountPage", {login_error: "", register_error: ""})
                 }
             }
             else
             {
-                res.render("accountPage")
+                res.render("accountPage", {login_error: "", register_error: ""})
             }
         }
     }
     catch{
-        res.render("accountPage")
+        res.render("accountPage", {login_error: "", register_error: ""})
     }
 })
 
@@ -182,22 +182,22 @@ app.post("/register", async (req, res) => {
     let data = req.body
     if(data.password != data.repeat_password)
     {
-        res.end()  
+        res.render("accountPage", {login_error: "", register_error: "Passwords don't match"})  
     }
     else if(Validator.isEmail(data.email) == false)
     {
-        res.end('<p>The email you have entered is invalid</p> <br> <a href="/accountPage"><button>Try Again</button></a>')
+        res.render("accountPage", {login_error: "", register_error: "The email is incorrect"})  
     }
     else if(await collection.findOne({email: data.email}))
     {
-        res.end('<p>Account with that email already exists</p> <br> <a href="/accountPage"><button>Try Again</button></a>')
+        res.render("accountPage", {login_error: "", register_error: "An account with this email already exists"})  
     }
     else
     {
         email1 = data.email
         hash1 = await bcrypt.hash(data.password, 10)
         email_authorization()
-        res.render("accVerifPage")
+        res.render("accVerifPage", {error:""})
         
     }
 
@@ -264,7 +264,7 @@ app.post("/authorization", async(req, res) => {
     }
     else
     {
-        res.end('<p>The authorization code you have entered is incorrect</p> <br> <a href="/accountPage"><button>Try Again</button></a>')
+        res.render("accVerifPage", {error:"The verification code is incorrect"})
     }
 })
 
@@ -273,7 +273,7 @@ app.post("/login", async (req, res) => {
     let data = req.body;
     if(Validator.isEmail(data.email) == false)
     {
-        res.end('<p>The email you have entered is invalid</p> <br> <a href="/accountPage"><button>Try Again</button></a>')
+        res.render("accountPage", {login_error: "The email is invalid", register_error: ""})  
     }
     else if(await collection.findOne({email: data.email}))
     {
@@ -289,12 +289,12 @@ app.post("/login", async (req, res) => {
         }
         else
         {
-            res.end('<p>The email or the password you have entered is invalid</p> <br> <a href="/accountPage"><button>Try Again</button></a>')
+            res.render("accountPage", {login_error: "The credentials are incorrect", register_error: ""})  
         }
     }
     else
     {
-        res.end('<p>The email or the password you have entered is invalid</p> <br> <a href="/accountPage"><button>Try Again</button></a>')
+        res.render("accountPage", {login_error: "The credentials are incorrect", register_error: ""}) 
     }
 })
 
