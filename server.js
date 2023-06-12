@@ -15,7 +15,7 @@ let auth_code;
 app.set("view engine", "ejs");
 
 //Connect to DB
-const client = new MongoClient("mongodb+srv://DbUser:wAEFLnsCKuh8qppA@hacktues.klqsa4r.mongodb.net/?retryWrites=true&w=majority", { useNewUrlParser: true, useUnifiedTopology: true, serverApi: ServerApiVersion.v1 });
+const client = new MongoClient("mongodb+srv://admin:vanio3768@cluster0.kwogv5a.mongodb.net/?retryWrites=true&w=majority", { useNewUrlParser: true, useUnifiedTopology: true, serverApi: ServerApiVersion.v1 });
 client.connect()
 const collection = client.db("Users").collection("Login");
 
@@ -82,14 +82,26 @@ app.get("/trackersPage", async(req, res) => {
                                 'key': apiKey
                             }
                         })
-                        console.log(response)
                         let json = await response.text()
-                        console.log(json)
                         json = JSON.parse(json)
-                        console.log(json)
-                        let payload = json[0].data.payload
+                        let i = 0
+                        while(json[i].sub_category != 'uplink_confirmed'){
+                            console.log(json.category)
+                            console.log(json[i].data.payload)
+                            i++;
+                        }
+                        console.log(i);
+                        console.log(json[i]);
+                        let payload = json[i].data.payload
                         console.log(payload)
-                        let payload_d = atob(payload); 
+                        let payload_d;
+                        try {
+                        const decodedPayload = Buffer.from(payload, 'base64').toString('utf-8');
+                        payload_d = decodedPayload;
+                        } catch (error) {
+                        console.error('An error occurred while decoding the payload:', error);
+                        }
+
                         console.log(payload_d)
                         
                         let coords_arr = payload_d.split(",")
@@ -207,15 +219,17 @@ async function email_authorization()
 {
     auth_code = Math.floor(100000 + Math.random() * 900000)
     let transporter = nodemailer.createTransport({
-        service: 'gmail',
+        host: 'smtp.gmail.com',
+        port: 465,
+        secure: true,
         auth: {
-            user: 'petsafe1234@gmail.com',
-            pass: 'tjggczeipbzkxutn'
+            user: 'petsafe37@gmail.com',
+            pass: 'qqyokzrqpyelygke'
         }
     });
 
     let mailOptions = {
-    from: 'petsafe1234@gmail.com',
+    from: 'PetSafe2FA',
     to: email1,
     subject: 'Authorization Code',
     text: auth_code.toString()
