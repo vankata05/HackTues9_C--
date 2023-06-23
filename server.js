@@ -85,10 +85,14 @@ app.get("/trackersPage", async(req, res) => {
                         let json = await response.text()
                         json = JSON.parse(json)
                         let i = 0
-                        while(json[i].sub_category != 'uplink_confirmed'){
+                        while(json[i].sub_category != "uplink_confirmed"){
                             console.log(json.category)
                             console.log(json[i].data.payload)
                             i++;
+                            if(i == json.length){
+                                //redirect to home
+                                res.redirect("/")
+                            }
                         }
                         console.log(i);
                         console.log(json[i]);
